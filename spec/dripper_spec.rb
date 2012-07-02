@@ -44,17 +44,44 @@ describe "Dripper" do
 
   end
 
+  describe 'performing an offset action' do
+    let(:drip) { subject.new(instance) }
+
+    before do
+      subject.after 1.day do |instance|
+        instance.foo
+      end
+    end
+
+    it 'gracefully fails when an after block cannot be found' do
+      expect { subject.perform position: 4, id: 1 }.to_not raise_error
+    end
+
+    it 'calls the block and supplies the instance' do
+      instance.should_receive :foo
+      subject.should_receive(:fetch_instance).and_return(instance)
+      subject.perform position: 0, id: 1
+    end
+  end
+
   describe 'Using with resque-scheduler' do
     subject { Class.new { include Dripper::ResqueScheduler } }
+    before { class Resque ; end }
 
-    it 'attempts to enqueue each offset' do
-      class Resque ; end
+    it 'attempts to enqueue each job' do
       subject.after(1.day) {}
       drip = subject.new(instance)
       offset = drip.scheduled_times.first
       Resque.should_receive(:enqueue_at).with(offset, subject, { id: instance.id })
 
       drip.schedule!
+    end
+
+    it 'purges any scheduled jobs' do
+      Resque.should_receive(:remove_delayed).with(subject, { id: instance.id })
+
+      drip = subject.new(instance)
+      drip.clear!
     end
 
   end

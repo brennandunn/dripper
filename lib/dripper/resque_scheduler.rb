@@ -8,7 +8,11 @@ module Dripper
     module InstanceMethods
 
       def enqueue(time)
-        Resque.enqueue_at(time, self.class, { id: @instance.id })
+        Resque.enqueue_at(time, self.class, id: @instance.id)
+      end
+
+      def clear!
+        Resque.remove_delayed(self.class, id: @instance.id)
       end
 
     end

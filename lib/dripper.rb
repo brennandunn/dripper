@@ -45,11 +45,22 @@ module Dripper
     end
 
     def after(offset, &block)
-      after_blocks << { offset: offset }
+      after_blocks << { offset: offset, block: block }
     end
 
     def send_at(offset_array)
       @send_at_offset = offset_array
+    end
+
+    def perform(options={})
+      position = options.delete(:position)
+      if found = after_blocks[position]
+        found[:block].call(fetch_instance(options))
+      end
+    end
+
+    def fetch_instance(options={})
+      # nothing here
     end
 
   end
