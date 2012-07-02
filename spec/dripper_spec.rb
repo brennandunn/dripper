@@ -21,6 +21,19 @@ describe "Dripper" do
 
     describe 'when defining send_at' do
       it 'ignores when the after amount is less than a day' do
+        subject.send_at [9, 0]
+        subject.after(5.minutes) {}
+
+        drip = subject.new(instance)
+        drip.scheduled_times.should == [now + 5.minutes]
+      end
+
+      it 'schedules for the number of days out plus the send_at offset' do
+        subject.send_at [9, 0]
+        subject.after(2.days) {}
+
+        drip = subject.new(instance)
+        drip.scheduled_times.should == [(now + 2.days).beginning_of_day + 9.hours]
       end
 
       describe 'when skipping weekends' do

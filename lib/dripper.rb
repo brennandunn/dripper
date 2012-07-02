@@ -16,10 +16,18 @@ module Dripper
   end
 
   def scheduled_times
-    self.class.after_blocks.map { |b| starting_time + b[:offset] }
+    offset = self.class.send_at_offset
+    self.class.after_blocks.map do |b|
+      t = starting_time + b[:offset]
+      if offset and b[:offset] >= 1.day
+        t = t.beginning_of_day + offset[0].hours + offset[1].minutes
+      end
+      t
+    end
   end
 
   module ClassMethods
+    def send_at_offset ; @send_at_offset ; end
 
     def after_blocks
       @after_blocks ||= []
@@ -27,6 +35,10 @@ module Dripper
 
     def after(offset, &block)
       after_blocks << { offset: offset }
+    end
+
+    def send_at(offset_array)
+      @send_at_offset = offset_array
     end
 
   end
