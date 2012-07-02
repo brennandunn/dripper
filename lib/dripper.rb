@@ -1,4 +1,5 @@
 require 'active_support/all'
+require 'dripper/resque_scheduler'
 
 module Dripper
 
@@ -24,6 +25,16 @@ module Dripper
       end
       t
     end
+  end
+
+  def schedule!
+    scheduled_times.each do |time|
+      enqueue(time)
+    end
+  end
+
+  def enqueue(time)
+    # nothing here
   end
 
   module ClassMethods

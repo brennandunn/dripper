@@ -19,8 +19,8 @@ describe "Dripper" do
       drip.scheduled_times.should == [now + 1.day]
     end
 
-    describe 'when defining send_at' do
-      it 'ignores when the after amount is less than a day' do
+    describe 'generating a schedule' do
+      it 'ignores send_at when the after amount is less than a day' do
         subject.send_at [9, 0]
         subject.after(5.minutes) {}
 
@@ -44,7 +44,18 @@ describe "Dripper" do
 
   end
 
-  describe 'generating a schedule' do
+  describe 'Using with resque-scheduler' do
+    subject { Class.new { include Dripper::ResqueScheduler } }
+
+    it 'attempts to enqueue each offset' do
+      class Resque ; end
+      subject.after(1.day) {}
+      drip = subject.new(instance)
+      offset = drip.scheduled_times.first
+      Resque.should_receive(:enqueue_at).with(offset, subject, { id: instance.id })
+
+      drip.schedule!
+    end
 
   end
 
