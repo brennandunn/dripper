@@ -13,18 +13,15 @@ describe "Dripper" do
   describe 'choosing a time to schedule events' do
 
     it 'uses the timestamp plus the after amount when send_at is not defined' do
-      class SendAtNotDefined
-        include Dripper
+      subject.after(1.day) {}
 
-        after 1.day do ; end
-      end
-
-      drip = SendAtNotDefined.new(instance)
+      drip = subject.new(instance)
       drip.scheduled_times.should == [now + 1.day]
     end
 
     describe 'when defining send_at' do
-      it 'ignores when the after amount is less than a day'
+      it 'ignores when the after amount is less than a day' do
+      end
 
       describe 'when skipping weekends' do
         it 'sends on a Friday for Saturday events'
