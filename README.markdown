@@ -9,37 +9,37 @@ Dripper is a lightweight library that makes it easy to setup a series of schedul
 
 To install
 
-  gem 'dripper'
+    gem 'dripper'
 
 Define a class, and include a Dripper adapter (at the moment, only ResqueScheduler is supported)
 
-  class UserDrip
-    include Dripper::ResqueScheduler
-  end
+    class UserDrip
+      include Dripper::ResqueScheduler
+    end
 
 Dripper needs a few things defined in order to work properly. First, a series of blocks to be executed.
 
-  after 5.minutes do |user|
-    UserMailer.welcome(user).deliver!
-  end
-
-  after 10.days do |user|
-    UserMailer.trial_expiring_soon(user).deliver!
-  end
+    after 5.minutes do |user|
+      UserMailer.welcome(user).deliver!
+    end
+    
+    after 10.days do |user|
+      UserMailer.trial_expiring_soon(user).deliver!
+    end
 
 No presumptions are made about how you go about finding an instance to yield into an after block, so define a class level lookup method:
 
-  def self.fetch_instance(options={})
-    User.find(options[:id])
-  end
+    def self.fetch_instance(options={})
+      User.find(options[:id])
+    end
 
 By default Dripper will fire a block after the offset you provide has elapsed, but sending emails in the middle of the night isn't always ideal. By specifying the offset in hours and minutes (relative to midnight), you can make sure your messages are sent at the ideal time.
 
-  send_at [9, 0] # send at 9am
+    send_at [9, 0] # send at 9am
 
 You can also have Dripper not perform blocks on weekends.
 
-  send_at [15, 0], weekends: false
+    send_at [15, 0], weekends: false
 
 If you *don't* want certain blocks to be fired, the only way to do that now is to add the right conditions in your blocks. A good use case would be sending out "come back! we miss you!" emails - it's likely that you don't want those sent to paying customers.
 
