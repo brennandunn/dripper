@@ -37,7 +37,7 @@ By default Dripper will fire a block after the offset you provide has elapsed, b
 
     send_at [9, 0] # send at 9am
 
-You can also have Dripper not perform blocks on weekends.
+You can also have Dripper not perform blocks on weekends. When enabled, any delayed job that's supposed to run on Saturday will run exactly 24 hours prior, on Friday. Likewise, jobs on Sunday will run on Monday.
 
     send_at [15, 0], weekends: false
 
