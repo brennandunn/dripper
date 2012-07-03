@@ -70,6 +70,8 @@ Here's what a complete implementation might look like:
         # send "come back!" email unless subscribed
       end
 
+    end
+
 Usage is pretty simple.
 
       UserDrip.new(current_user).schedule!
