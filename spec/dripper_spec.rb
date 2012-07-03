@@ -37,8 +37,25 @@ describe "Dripper" do
       end
 
       describe 'when skipping weekends' do
-        it 'sends on a Friday for Saturday events'
-        it 'sends on a Monday for Sunday events'
+        before do
+          subject.send_at [9, 0], weekends: false
+        end
+
+        it 'sends on a Friday for Saturday events' do
+          subject.after(5.days) {}
+          instance.should_receive(:created_at).and_return { Time.now.beginning_of_week } # Monday
+
+          drip = subject.new(instance)
+          drip.scheduled_times.should == [(instance.created_at + 4.days).beginning_of_day + 9.hours] # Friday, 9am
+        end
+        it 'sends on a Monday for Sunday events' do
+          subject.after(6.days) {}
+          instance.should_receive(:created_at).and_return { Time.now.beginning_of_week } # Monday
+
+          drip = subject.new(instance)
+          drip.scheduled_times.should == [(instance.created_at + 7.days).beginning_of_day + 9.hours] # Monday, 9am
+
+        end
       end
     end
 

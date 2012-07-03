@@ -16,10 +16,20 @@ module Dripper
     @instance.created_at
   end
 
+  def offset_time(offset)
+    calculated_time = starting_time + offset
+    if calculated_time.wday == 6 # Saturday
+      calculated_time = calculated_time - 1.day
+    elsif calculated_time.wday == 0 # Sunday
+      calculated_time = calculated_time + 1.day
+    end
+    calculated_time
+  end
+
   def scheduled_times
     offset = self.class.send_at_offset
     self.class.after_blocks.map do |b|
-      t = starting_time + b[:offset]
+      t = offset_time(b[:offset])
       if offset and b[:offset] >= 1.day
         t = t.beginning_of_day + offset[0].hours + offset[1].minutes
       end
@@ -39,6 +49,7 @@ module Dripper
 
   module ClassMethods
     def send_at_offset ; @send_at_offset ; end
+    def send_at_options ; @send_at_options ; end
 
     def after_blocks
       @after_blocks ||= []
@@ -48,8 +59,9 @@ module Dripper
       after_blocks << { offset: offset, block: block }
     end
 
-    def send_at(offset_array)
+    def send_at(offset_array, options={})
       @send_at_offset = offset_array
+      @send_at_options = options
     end
 
     def perform(options={})
