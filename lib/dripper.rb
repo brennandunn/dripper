@@ -9,11 +9,12 @@ module Dripper
 
   def initialize(instance)
     raise ArgumentError, "The object must respond to #id" unless instance.respond_to?(:id)
+    raise ArgumentError, "The object must respond to #created_at" unless instance.respond_to?(:created_at)
     @instance = instance
   end
 
   def starting_time
-    @instance.created_at
+    @instance.created_at  # Fix this
   end
 
   def offset_time(offset)
