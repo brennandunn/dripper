@@ -43,6 +43,47 @@ You can also have Dripper not perform blocks on weekends.
 
 If you *don't* want certain blocks to be fired, the only way to do that now is to add the right conditions in your blocks. A good use case would be sending out "come back! we miss you!" emails - it's likely that you don't want those sent to paying customers.
 
+Here's what a complete implementation might look like:
+
+    class UserDrip
+      include Dripper::ResqueScheduler
+
+      send_at [9, 0], weekends: false
+
+      after 5.minutes do |user|
+        # send "welcome!" email
+      end
+
+      after 1.day do |user|
+        # send "getting started" email
+      end
+
+      after 27.days do |user|
+        # send "trial expiring in 3 days" email
+      end
+
+      after 30.days do |user|
+        # send "trial expired" email unless subscribed
+      end
+
+      after 60.days do |user|
+        # send "come back!" email unless subscribed
+      end
+
+Usage is pretty simple.
+
+      UserDrip.new(current_user).schedule!
+
+At the moment **you must provide an object that responds to #id and #created_at**. ID is used for the delayed job, and the timestamp is used to determine the contact schedule.
+
+Modifying the times that these blocks will be fired off is tricky. Because Dripper queues up a list of absolute timestamps within resque-scheduler, the only way to safely add, remove or change a schedule is to purge it from Redis and add it again.
+
+      UserDrip.new(current_user).clear!
+      UserDrip.new(current_user).schedule!
+
+If you're interested in seeing the list of times generated: `UserDrip.new(current_user).scheduled_times`
+
+
 ### Dependencies
 
 At the moment, ResqueScheduler is the only job scheduler supported. However, it would be pretty trivial to fork and add in a hook to your own scheduler (hint hint!)
@@ -59,7 +100,7 @@ Additionally, ActiveSupport is required.
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-== Copyright
+### Copyright
 
 Copyright (c) 2012 Brennan Dunn. See LICENSE.txt for
 further details.
