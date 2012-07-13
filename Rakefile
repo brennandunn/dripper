@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/brennandunn/dripper"
   gem.license = "MIT"
   gem.summary = %Q{A simple gem that makes creating drip email campaigns a breeze}
-  gem.description = %Q{Depends on resque-scheduler}
+  gem.description = %Q{A simple gem that makes creating drip email campaigns a breeze}
   gem.email = "me@brennandunn.com"
   gem.authors = ["Brennan Dunn"]
   # dependencies defined in Gemfile

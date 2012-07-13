@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brennan Dunn"]
   s.date = "2012-07-13"
-  s.description = "Depends on resque-scheduler"
+  s.description = "A simple gem that makes creating drip email campaigns a breeze"
   s.email = "me@brennandunn.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     "README.markdown",
     "Rakefile",
     "VERSION",
+    "dripper.gemspec",
     "lib/dripper.rb",
     "lib/dripper/resque_scheduler.rb",
     "spec/dripper_spec.rb",
