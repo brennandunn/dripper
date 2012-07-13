@@ -19,10 +19,13 @@ module Dripper
 
   def offset_time(offset)
     calculated_time = starting_time + offset
-    if calculated_time.wday == 6 # Saturday
-      calculated_time = calculated_time - 1.day
-    elsif calculated_time.wday == 0 # Sunday
-      calculated_time = calculated_time + 1.day
+    options = self.class.send_at_options
+    unless options[:weekends]
+      if calculated_time.wday == 6 # Saturday
+        calculated_time = calculated_time - 1.day
+      elsif calculated_time.wday == 0 # Sunday
+        calculated_time = calculated_time + 1.day
+      end
     end
     calculated_time
   end
@@ -50,7 +53,7 @@ module Dripper
 
   module ClassMethods
     def send_at_offset ; @send_at_offset ; end
-    def send_at_options ; @send_at_options ; end
+    def send_at_options ; @send_at_options || { :weekends => true } ; end
 
     def after_blocks
       @after_blocks ||= []
@@ -62,7 +65,7 @@ module Dripper
 
     def send_at(offset_array, options={})
       @send_at_offset = offset_array
-      @send_at_options = options
+      @send_at_options = { :weekends => true }.merge(options)
     end
 
     def perform(options={})
